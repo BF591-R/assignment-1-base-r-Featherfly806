@@ -370,7 +370,7 @@ deviation of 1.</p>
 <pre class="r"><code># NB: sample_normal is defined in main.R
 x &lt;- sample_normal(10)
 less_than_zero(x)</code></pre>
-<pre><code>##  [1]  TRUE FALSE  TRUE FALSE  TRUE FALSE  TRUE FALSE FALSE FALSE</code></pre>
+<pre><code>##  [1] FALSE  TRUE  TRUE FALSE  TRUE FALSE FALSE FALSE FALSE  TRUE</code></pre>
 <p>Recall that logical values <code>TRUE</code> and <code>FALSE</code>
 are numerically equal to 1 and 0, respectively. We can therefore perform
 arithmetic operations on them. A quick way to see how many values are
@@ -389,7 +389,7 @@ than some value <span class="math inline">\(a\)</span> and less than
 <code>TRUE</code> when an element is strictly between values
 <code>a</code> and <code>b</code>, and <code>FALSE</code> otherwise.</p>
 <pre class="r"><code>is_between(x, -1, 1)</code></pre>
-<pre><code>##  [1]  TRUE  TRUE FALSE FALSE  TRUE  TRUE  TRUE  TRUE  TRUE FALSE</code></pre>
+<pre><code>##  [1]  TRUE FALSE  TRUE FALSE  TRUE FALSE  TRUE FALSE FALSE  TRUE</code></pre>
 <p>We can again use the fact that logical vectors are numeric to sanity
 check our code. Recall from above that our vector has 100 samples drawn
 from a normal distribution with mean zero and standard devation 1. From
@@ -397,14 +397,14 @@ the theoretical definition of a normal distribution, we would expect
 68.2% of our values to fall within one standard deviation of zero. We
 can check that similarly to above.</p>
 <pre class="r"><code>sum(is_between(x, -1, 1))</code></pre>
-<pre><code>## [1] 7</code></pre>
+<pre><code>## [1] 5</code></pre>
 <p>Due to sampling error the fraction of samples in this range likely
 won’t be exactly 68.2% for any given data set, but if we increase the
 number of samples it should approach this number.</p>
 <pre class="r"><code># now sample 100k times and check to see how many fall within 1 standard deviation of 0
 num_samples &lt;- 100000
 sum(is_between(sample_normal(num_samples), -1, 1))/num_samples</code></pre>
-<pre><code>## [1] 0.68312</code></pre>
+<pre><code>## [1] 0.68389</code></pre>
 </div>
 <div id="missing-values" class="section level2">
 <h2>3. Missing Values</h2>
@@ -422,7 +422,7 @@ x &lt;- sample_normal_w_missing(1000, missing_frac=0.1)
 
 x_non_missing &lt;- rm_na(x)
 length(x_non_missing)</code></pre>
-<pre><code>## [1] 900</code></pre>
+<pre><code>## [1] 914</code></pre>
 </div>
 <div id="row-wise-matrix-computations" class="section level2">
 <h2>4. Row-wise Matrix Computations</h2>
@@ -442,8 +442,7 @@ the <code>row_medians()</code> function.</p>
 # NB: simulate_gene_expression is defined in main.R
 gene_exp &lt;- simulate_gene_expression(num_samples=30, num_genes=10)
 row_medians(gene_exp)</code></pre>
-<pre><code>##  [1]  0.08592802  0.26303174  0.30591801 -0.14240297  0.22065763  0.17377127
-##  [7]  0.38300342  0.08665616 -0.06421538 -0.12872055</code></pre>
+<pre><code>##  [1]   4.0   1.5 277.0 537.0   7.0   3.0   4.0  19.0 151.0   0.0</code></pre>
 </div>
 <div id="generalizing-row-wise-matrix-computations" class="section level2">
 <h2>5. Generalizing Row-wise Matrix Computations</h2>
@@ -460,21 +459,19 @@ gene_exp &lt;- simulate_gene_expression(num_samples=30, num_genes=10)
 
 # with median, same as above
 summarize_rows(gene_exp, median)</code></pre>
-<pre><code>##  [1]  0.0091331677  0.3397619674  0.0615657314  0.2723791957 -0.2785483361
-##  [6] -0.1007051470  0.1146341594  0.0056258227  0.0002301075 -0.0174108604</code></pre>
+<pre><code>##  [1]   4.0   1.5 277.0 537.0   7.0   3.0   4.0  19.0 151.0   0.0</code></pre>
 <p>In addition to median, we will summarize with several other functions
 as well. With arithmetic mean:</p>
 <pre class="r"><code>summarize_rows(gene_exp, mean)</code></pre>
-<pre><code>##  [1]  0.02780296  0.16379701 -0.02393238  0.27848881 -0.23933504 -0.01408973
-##  [7]  0.05164292 -0.01828315 -0.06363347  0.14908195</code></pre>
+<pre><code>##  [1]   4.3000000   1.7666667 295.7333333 538.1666667   7.6000000   3.2666667
+##  [7]   4.1000000  19.0666667 152.4000000   0.1666667</code></pre>
 <p>With standard deviation:</p>
 <pre class="r"><code>summarize_rows(gene_exp, sd)</code></pre>
-<pre><code>##  [1] 0.9505550 0.9225755 1.0654975 0.9921011 1.0761973 1.3331160 0.9185000
-##  [8] 1.0443585 1.3498442 1.0494968</code></pre>
+<pre><code>##  [1]  2.705677  1.330889 77.474772 48.311549  4.430303  1.740657  2.309650
+##  [8]  4.630732 20.710817  0.461133</code></pre>
 <p>And with minimum:</p>
 <pre class="r"><code>summarize_rows(gene_exp, min)</code></pre>
-<pre><code>##  [1] -2.250708 -2.045323 -2.938694 -1.765467 -2.050731 -2.796365 -2.126697
-##  [8] -2.142017 -2.932068 -2.141285</code></pre>
+<pre><code>##  [1]   1   0 177 449   0   0   1  10 119   0</code></pre>
 </div>
 <div id="creating-summarization-data-frame" class="section level2">
 <h2>6. Creating Summarization Data Frame</h2>
@@ -502,14 +499,14 @@ summary_df &lt;- summarize_matrix(gene_exp)
 kableExtra::kable(summary_df)</code></pre>
 <table>
 <colgroup>
-<col width="12%" />
-<col width="11%" />
-<col width="12%" />
-<col width="12%" />
-<col width="11%" />
+<col width="17%" />
+<col width="14%" />
 <col width="10%" />
-<col width="18%" />
-<col width="8%" />
+<col width="5%" />
+<col width="5%" />
+<col width="13%" />
+<col width="23%" />
+<col width="10%" />
 </colgroup>
 <thead>
 <tr class="header">
@@ -525,103 +522,103 @@ kableExtra::kable(summary_df)</code></pre>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="right">0.0336479</td>
-<td align="right">0.9106324</td>
-<td align="right">-0.0359251</td>
-<td align="right">-1.4615824</td>
-<td align="right">1.9476225</td>
-<td align="right">15</td>
-<td align="right">6</td>
+<td align="right">4.3000000</td>
+<td align="right">2.705677</td>
+<td align="right">4.0</td>
+<td align="right">1</td>
+<td align="right">14</td>
+<td align="right">0</td>
+<td align="right">16</td>
 <td align="right">0</td>
 </tr>
 <tr class="even">
-<td align="right">0.0801687</td>
-<td align="right">0.9355039</td>
-<td align="right">0.2509770</td>
-<td align="right">-2.8197126</td>
-<td align="right">1.7235876</td>
-<td align="right">12</td>
+<td align="right">1.7666667</td>
+<td align="right">1.330889</td>
+<td align="right">1.5</td>
+<td align="right">0</td>
 <td align="right">5</td>
+<td align="right">0</td>
+<td align="right">14</td>
 <td align="right">0</td>
 </tr>
 <tr class="odd">
-<td align="right">-0.0729499</td>
-<td align="right">0.9995217</td>
-<td align="right">-0.1754445</td>
-<td align="right">-1.7900941</td>
-<td align="right">1.9777454</td>
-<td align="right">18</td>
-<td align="right">5</td>
+<td align="right">295.7333333</td>
+<td align="right">77.474772</td>
+<td align="right">277.0</td>
+<td align="right">177</td>
+<td align="right">468</td>
+<td align="right">0</td>
+<td align="right">0</td>
 <td align="right">0</td>
 </tr>
 <tr class="even">
-<td align="right">-0.4382612</td>
-<td align="right">0.8342483</td>
-<td align="right">-0.4039272</td>
-<td align="right">-2.4701400</td>
-<td align="right">0.9556422</td>
-<td align="right">19</td>
+<td align="right">538.1666667</td>
+<td align="right">48.311549</td>
+<td align="right">537.0</td>
+<td align="right">449</td>
+<td align="right">678</td>
+<td align="right">0</td>
 <td align="right">0</td>
 <td align="right">0</td>
 </tr>
 <tr class="odd">
-<td align="right">-0.2437905</td>
-<td align="right">0.8607400</td>
-<td align="right">-0.1936680</td>
-<td align="right">-1.7810277</td>
-<td align="right">1.2283670</td>
-<td align="right">17</td>
-<td align="right">3</td>
+<td align="right">7.6000000</td>
+<td align="right">4.430303</td>
+<td align="right">7.0</td>
 <td align="right">0</td>
-</tr>
-<tr class="even">
-<td align="right">0.1779941</td>
-<td align="right">0.8231356</td>
-<td align="right">0.1069534</td>
-<td align="right">-1.4574045</td>
-<td align="right">1.9994542</td>
-<td align="right">13</td>
-<td align="right">5</td>
+<td align="right">25</td>
 <td align="right">0</td>
-</tr>
-<tr class="odd">
-<td align="right">0.1342876</td>
-<td align="right">1.1709330</td>
-<td align="right">0.0440026</td>
-<td align="right">-1.7162899</td>
-<td align="right">2.7414364</td>
-<td align="right">15</td>
-<td align="right">8</td>
-<td align="right">0</td>
-</tr>
-<tr class="even">
-<td align="right">-0.0922879</td>
-<td align="right">0.9511440</td>
-<td align="right">-0.2752456</td>
-<td align="right">-2.1650483</td>
-<td align="right">2.0047002</td>
-<td align="right">18</td>
 <td align="right">4</td>
 <td align="right">0</td>
 </tr>
-<tr class="odd">
-<td align="right">0.2710051</td>
-<td align="right">0.7952132</td>
-<td align="right">0.1955906</td>
-<td align="right">-0.9265193</td>
-<td align="right">2.2749563</td>
-<td align="right">12</td>
+<tr class="even">
+<td align="right">3.2666667</td>
+<td align="right">1.740657</td>
+<td align="right">3.0</td>
+<td align="right">0</td>
 <td align="right">7</td>
+<td align="right">0</td>
+<td align="right">22</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="right">4.1000000</td>
+<td align="right">2.309650</td>
+<td align="right">4.0</td>
+<td align="right">1</td>
+<td align="right">9</td>
+<td align="right">0</td>
+<td align="right">15</td>
 <td align="right">0</td>
 </tr>
 <tr class="even">
-<td align="right">-0.3659957</td>
-<td align="right">0.9007326</td>
-<td align="right">-0.3570693</td>
-<td align="right">-3.1865399</td>
-<td align="right">1.4466043</td>
-<td align="right">20</td>
+<td align="right">19.0666667</td>
+<td align="right">4.630732</td>
+<td align="right">19.0</td>
+<td align="right">10</td>
+<td align="right">28</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="right">152.4000000</td>
+<td align="right">20.710817</td>
+<td align="right">151.0</td>
+<td align="right">119</td>
+<td align="right">191</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="right">0.1666667</td>
+<td align="right">0.461133</td>
+<td align="right">0.0</td>
+<td align="right">0</td>
 <td align="right">2</td>
+<td align="right">0</td>
+<td align="right">1</td>
 <td align="right">0</td>
 </tr>
 </tbody>
@@ -646,13 +643,13 @@ kableExtra::kable(summary_df)</code></pre>
 <table>
 <colgroup>
 <col width="13%" />
-<col width="12%" />
 <col width="13%" />
-<col width="12%" />
 <col width="10%" />
+<col width="6%" />
+<col width="6%" />
+<col width="13%" />
+<col width="24%" />
 <col width="10%" />
-<col width="19%" />
-<col width="8%" />
 </colgroup>
 <thead>
 <tr class="header">
@@ -705,37 +702,17 @@ kableExtra::kable(summary_df)</code></pre>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
-<td align="right">7</td>
-</tr>
-<tr class="odd">
-<td align="right">NA</td>
-<td align="right">NA</td>
-<td align="right">NA</td>
-<td align="right">NA</td>
-<td align="right">NA</td>
-<td align="right">NA</td>
-<td align="right">NA</td>
-<td align="right">2</td>
-</tr>
-<tr class="even">
-<td align="right">-0.1020267</td>
-<td align="right">0.8533871</td>
-<td align="right">-0.0296735</td>
-<td align="right">-1.929717</td>
-<td align="right">1.687715</td>
-<td align="right">17</td>
-<td align="right">2</td>
-<td align="right">0</td>
-</tr>
-<tr class="odd">
-<td align="right">NA</td>
-<td align="right">NA</td>
-<td align="right">NA</td>
-<td align="right">NA</td>
-<td align="right">NA</td>
-<td align="right">NA</td>
-<td align="right">NA</td>
 <td align="right">6</td>
+</tr>
+<tr class="odd">
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">3</td>
 </tr>
 <tr class="even">
 <td align="right">NA</td>
@@ -755,7 +732,27 @@ kableExtra::kable(summary_df)</code></pre>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
-<td align="right">2</td>
+<td align="right">4</td>
+</tr>
+<tr class="even">
+<td align="right">19.06667</td>
+<td align="right">4.630732</td>
+<td align="right">19</td>
+<td align="right">10</td>
+<td align="right">28</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">4</td>
 </tr>
 <tr class="even">
 <td align="right">NA</td>
@@ -765,7 +762,7 @@ kableExtra::kable(summary_df)</code></pre>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
-<td align="right">1</td>
+<td align="right">4</td>
 </tr>
 </tbody>
 </table>
@@ -779,14 +776,14 @@ summarization.</p>
 kableExtra::kable(summary_df)</code></pre>
 <table>
 <colgroup>
-<col width="13%" />
-<col width="12%" />
-<col width="13%" />
-<col width="12%" />
+<col width="17%" />
+<col width="15%" />
 <col width="10%" />
+<col width="5%" />
+<col width="5%" />
+<col width="12%" />
+<col width="22%" />
 <col width="10%" />
-<col width="19%" />
-<col width="8%" />
 </colgroup>
 <thead>
 <tr class="header">
@@ -802,104 +799,104 @@ kableExtra::kable(summary_df)</code></pre>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="right">-0.1404202</td>
-<td align="right">1.0650382</td>
-<td align="right">-0.1491421</td>
-<td align="right">-2.524724</td>
-<td align="right">2.063651</td>
-<td align="right">15</td>
-<td align="right">4</td>
+<td align="right">4.3461538</td>
+<td align="right">2.6674678</td>
+<td align="right">4.0</td>
+<td align="right">1</td>
+<td align="right">14</td>
+<td align="right">0</td>
+<td align="right">13</td>
 <td align="right">4</td>
 </tr>
 <tr class="even">
-<td align="right">0.1611796</td>
-<td align="right">0.8981980</td>
-<td align="right">0.1232296</td>
-<td align="right">-1.484440</td>
-<td align="right">2.227142</td>
-<td align="right">13</td>
+<td align="right">1.8518519</td>
+<td align="right">1.3503192</td>
+<td align="right">2.0</td>
+<td align="right">0</td>
 <td align="right">5</td>
+<td align="right">0</td>
+<td align="right">13</td>
 <td align="right">3</td>
 </tr>
 <tr class="odd">
-<td align="right">0.0784085</td>
-<td align="right">1.1429763</td>
-<td align="right">0.2393837</td>
-<td align="right">-1.967641</td>
-<td align="right">2.169035</td>
-<td align="right">12</td>
-<td align="right">6</td>
+<td align="right">295.7142857</td>
+<td align="right">79.9040430</td>
+<td align="right">277.0</td>
+<td align="right">177</td>
+<td align="right">468</td>
+<td align="right">0</td>
+<td align="right">0</td>
 <td align="right">2</td>
 </tr>
 <tr class="even">
-<td align="right">-0.0145912</td>
-<td align="right">1.0640526</td>
-<td align="right">0.0382978</td>
-<td align="right">-2.577504</td>
-<td align="right">1.821213</td>
-<td align="right">10</td>
-<td align="right">4</td>
-<td align="right">7</td>
+<td align="right">527.0000000</td>
+<td align="right">40.9177329</td>
+<td align="right">527.5</td>
+<td align="right">449</td>
+<td align="right">620</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">6</td>
 </tr>
 <tr class="odd">
-<td align="right">-0.2538382</td>
-<td align="right">1.1446587</td>
-<td align="right">-0.0216897</td>
-<td align="right">-3.122360</td>
-<td align="right">1.971275</td>
-<td align="right">14</td>
-<td align="right">2</td>
-<td align="right">2</td>
+<td align="right">7.4074074</td>
+<td align="right">4.6265061</td>
+<td align="right">7.0</td>
+<td align="right">0</td>
+<td align="right">25</td>
+<td align="right">0</td>
+<td align="right">4</td>
+<td align="right">3</td>
 </tr>
 <tr class="even">
-<td align="right">-0.1020267</td>
-<td align="right">0.8533871</td>
-<td align="right">-0.0296735</td>
-<td align="right">-1.929717</td>
-<td align="right">1.687715</td>
-<td align="right">17</td>
-<td align="right">2</td>
+<td align="right">3.3333333</td>
+<td align="right">1.6172151</td>
+<td align="right">3.0</td>
+<td align="right">1</td>
+<td align="right">7</td>
+<td align="right">0</td>
+<td align="right">21</td>
+<td align="right">3</td>
+</tr>
+<tr class="odd">
+<td align="right">4.2692308</td>
+<td align="right">2.3247829</td>
+<td align="right">4.0</td>
+<td align="right">1</td>
+<td align="right">9</td>
+<td align="right">0</td>
+<td align="right">13</td>
+<td align="right">4</td>
+</tr>
+<tr class="even">
+<td align="right">19.0666667</td>
+<td align="right">4.6307319</td>
+<td align="right">19.0</td>
+<td align="right">10</td>
+<td align="right">28</td>
+<td align="right">0</td>
+<td align="right">0</td>
 <td align="right">0</td>
 </tr>
 <tr class="odd">
-<td align="right">-0.0538213</td>
-<td align="right">0.9269959</td>
-<td align="right">-0.2271325</td>
-<td align="right">-1.666294</td>
-<td align="right">1.801482</td>
-<td align="right">15</td>
-<td align="right">3</td>
-<td align="right">6</td>
+<td align="right">151.6538462</td>
+<td align="right">19.8593903</td>
+<td align="right">150.5</td>
+<td align="right">119</td>
+<td align="right">191</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">4</td>
 </tr>
 <tr class="even">
-<td align="right">-0.2089148</td>
-<td align="right">1.0017338</td>
-<td align="right">-0.0608622</td>
-<td align="right">-2.968135</td>
-<td align="right">1.632684</td>
-<td align="right">16</td>
+<td align="right">0.1923077</td>
+<td align="right">0.4914656</td>
+<td align="right">0.0</td>
+<td align="right">0</td>
 <td align="right">2</td>
-<td align="right">3</td>
-</tr>
-<tr class="odd">
-<td align="right">0.1316571</td>
-<td align="right">1.0537119</td>
-<td align="right">0.0700310</td>
-<td align="right">-2.413169</td>
-<td align="right">2.515897</td>
-<td align="right">13</td>
-<td align="right">4</td>
-<td align="right">2</td>
-</tr>
-<tr class="even">
-<td align="right">-0.0408486</td>
-<td align="right">0.9732257</td>
-<td align="right">-0.2899544</td>
-<td align="right">-1.786546</td>
-<td align="right">2.346781</td>
-<td align="right">16</td>
-<td align="right">4</td>
+<td align="right">0</td>
 <td align="right">1</td>
+<td align="right">4</td>
 </tr>
 </tbody>
 </table>
